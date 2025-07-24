@@ -38,14 +38,19 @@ const userSchema = new Schema({
     photo: {
         type: String,
     }, 
-    role: String,
+    role: {
+        type: String,
+        enum: ["user", "admin", "superadmin"],
+        default: "user"
+    },
     password: {
         type: String,
         required: true,
     },
     verified: {
-        type: Boolean,
-        default: false
+        type: String,
+        enum: ["active", "pending", "deactivated"],
+        default: "pending"
     }
 }, { timestamps: true })
 

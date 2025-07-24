@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 
 (async () => {
     try{
-        const connection = await mongoose.connect('mongodb://localhost:27017/veeraclouds');
+        const connection = await mongoose.connect(process.env.DB);
         if(!connection) throw new Error("Connection is not good");
         console.log('connected to database');
 
@@ -17,9 +17,6 @@ app.use(express.urlencoded({ extended: true }));
         console.log(error.message);
     }
 })()
-
-
-
 
 app.use('/api', require('./routes'));
 
