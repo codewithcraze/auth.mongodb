@@ -1,6 +1,6 @@
 const { ApiError } = require('../utils');
 const bcrypt = require('bcryptjs');  // password hashing
-const User = require('../models');  // Mongoose model
+const { User} = require('../models');  // Mongoose model
 
 const authController = {
     async register(req, res, next) {
@@ -17,14 +17,18 @@ const authController = {
             // 3. Hash password
             const hashedPassword = await bcrypt.hash(password, 10);
 
+            const username = (first + Math.floor(Math.random() * 999)).toString();
 
             // 4. Create user
             const newUser = await User.create({
                 email,
+                username,
                 password: hashedPassword,
-                first,
-                last,
-                middle
+                name: {
+                    first,
+                    last,
+                    middle
+                }
             });
 
             // 5. Return success response (without password)
@@ -33,8 +37,8 @@ const authController = {
                 message: 'User registered successfully!',
                 user: {
                     id: newUser._id,
-                    email: newUser.email,
-                    name: `${newUser.first} ${newUser.last}`
+                    email: newUser?.email,
+                    name: `${newUser?.name.first} ${newUser?.name.last}`
                 }
             });
         } catch (error) {
