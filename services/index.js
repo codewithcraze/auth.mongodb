@@ -7,7 +7,8 @@ const {
 } = require('./auth.service');
 
 const {
-    sendOtpEmail
+    sendOtpEmail,
+    registerAcknowledgement
 } = require('./email.service');
 
 module.exports = {
@@ -20,4 +21,5 @@ module.exports = {
 
     // Email Service
     sendOtpEmail,
+    registerAcknowledgement
 }

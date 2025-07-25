@@ -1,6 +1,6 @@
 const { ApiError } = require('../utils');
 const bcrypt = require('bcryptjs');
-const { isEmailExits, createUser, sendOtp, sendOtpEmail, getOtp, verifyUser } = require('../services');
+const { isEmailExits, createUser, sendOtp, sendOtpEmail, getOtp, verifyUser, registerAcknowledgement} = require('../services');
 const jwt = require('jsonwebtoken');
 
 
@@ -40,9 +40,11 @@ const authController = {
     async verifyOtp(req, res, next) {
         try {
             const { email, otp } = req.body;
-            if (!await getOtp({ email, otp })) throw new ApiError(400, "Otp has been expired!");
+            if (!await getOtp({ email, otp })) throw new ApiError(400, "Otp is not correct!");
             // Otp Get Verified Send Token.
             const user = await verifyUser(email);
+            // Sending Acknowledge Email. Don't use await to stop.
+            await registerAcknowledgement(user.email, `${user?.name?.first || "" + " " + user?.name?.last || ""}`)
             const token = jwt.sign({ email: user.email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
             res.json({
                 status: true,
