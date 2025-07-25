@@ -18,33 +18,44 @@ const createUser = async ({ email, username, password, first, last, middle }) =>
     })
 }
 
-const sendOtp = async (email, length) => {
-    function generateOtp(length = 6) {
-        const digits = "0123456789";
-        let otp = "";
-        for (let i = 0; i < length; i++) {
-            otp += digits[Math.floor(Math.random() * 10)];
+const sendOtp = async (email, length = 6) => {
+
+    const currentOtp = await Otp.findOne({ email });
+    if (!currentOtp) {
+        function generateOtp(len) {
+            const digits = "0123456789";
+            let otp = "";
+            for (let i = 0; i < len; i++) {
+                otp += digits[Math.floor(Math.random() * 10)];
+            }
+            return otp.padStart(len, "0");
         }
-        return otp.padStart(length, "0");  
-    }
-    const otp = generateOtp(length);
+        const otp = generateOtp(length);
         const otpInfo = await Otp.create({
             email,
-            otp
-        })
-    return otpInfo.otp;
-}
+            otp,
+            createdAt: new Date()
+        });
+        return otpInfo.otp;
+    }else{
+        return currentOtp.otp;
+    }
+};
 
-const getOtp = async ({email, otp}) => {
-    return await Otp.findOne({ email, otp: otp.toString() }); 
+
+
+
+
+const getOtp = async ({ email, otp }) => {
+    return await Otp.findOne({ email, otp: otp.toString() });
 };
 
 const verifyUser = async (email) => {
-  return await User.findOneAndUpdate(
-    { email: email },
-    { $set: { verified: "active" } }, 
-    { new: true } 
-  );
+    return await User.findOneAndUpdate(
+        { email: email },
+        { $set: { verified: "active" } },
+        { new: true }
+    );
 };
 
 
