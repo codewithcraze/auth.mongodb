@@ -86,6 +86,23 @@ const authController = {
         } catch (error) {
             next(error);
         }
+    },
+
+    async isauth(req, res, next){
+        try{
+            const { email, id } = req.user;
+            const user = await isEmailExits(email)
+            if(!user) throw new ApiError(401, "Email not exits!");
+            const token = jwt.sign({email: user.email, id: user._id}, process.env.JWT_SECRET, { expiresIn: "1d" });
+            res.json({
+                status: true,
+                user,
+                token,
+                message: "Authentificated Successfully"
+            })
+        }catch(error){
+            next(error)
+        }
     }
 
 };
